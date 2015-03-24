@@ -1,0 +1,40 @@
+body
+{
+	margin: 3em;
+}
+
+pre
+{
+	max-width: 600px;
+	background-color: #E5CEF1;
+	color: black;
+	background-image: url('../img/puttysmall.png');
+	background-repeat: no-repeat;
+	padding-left: 35px;  /* width of the image plus a little extra padding */
+	display: block;  /* may not need this, but I've found I do */
+}
+
+h2
+{
+	border-bottom: solid 2px;
+	color: #A9BCF5;
+}
+
+
+.remarque
+{
+  color: #850394;
+  font-style: italic;
+
+}
+
+.cours
+{
+	background-color: #F7F8E0;
+	color: black;
+	background-image: url('../img/console2small.png');
+	background-repeat: no-repeat;
+	padding-left: 35px;  /* width of the image plus a little extra padding */
+	display: block;  /* may not need this, but I've found I do */
+	border-radius:4px;
+}

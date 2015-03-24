@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Découverte des outils de la JDK: jstack, jstat et jmap</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="css/bootstrap-theme.min.css" />
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" href="css/my-theme.css" />
+  <link rel="stylesheet" href="css/font-awesome.min.css">
+  <script src="js/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+</head>
+
+<body>
+	
+
+<div data-spy="affix" class="alert alert-info" >
+  <a href="#legendes">Légendes</a><br/>
+  <a href="#install">Installation</a><br/>
+  <a href="#info">Quelques infos</a><br/>
+  <a href="#jstack">jstack</a><br/>
+  <a href="#jstat">jstat</a><br/>
+  <a href="#jmap">jmap</a><br/>
+
+</div>
+
+<div style="padding-left:150px">
+  
+  <h1>Atelier découverte des outils de la JDK: jstack, jstat et jmap</h1>
+
+	<h2 id="intro">Introduction</h2>
+
+  <p>Soyons honnête, qui s'inquiète de la consommation mémoire ou des threads générées par le code java que nous écrivons ? Très peu de monde, et pour une simple et bonne raison: en local ça fonctionne très bien !
+
+  <br/><br/>Tous les tests unitaires et fonctionnels sont au vert et le jenkins d'intégration continue dit que tout va bien. Sauf que.... en local... vous avez un utilisateur, en recette/validation fonctionnelle, vous avez 2 ou 3 utilisateurs en même temps, mais en prod tout d'un coup il y en a 1000 par minutes ! Et ça change tout !
+
+  <br/><br/>Et le pire, c'est qu'en prod on a en général qu'un accès ssh: exit les IDE graphiques avec des belles courbes, fini les outils en tout genre permettant le debug pas à pas !
+
+  <br/><br/>Cet atelier va vous permettre de prendre en main des outils inclu dans la JDK et en mode console sur deux grandes catégories de problèmes de production: la surconsommation CPU et la surconsommation de la mémoire.
+
+  <br/><br/>Tout au long de l'atelier vous allez travailler sur un tomcat parce que c'est un des serveurs d'application que je connais le mieux, mais les outils java fonctionnent pour toute jvm: vous pouvez les utiliser sur un jBoss, un elasticsearch ou un java -jar ...etc</p>
+
+	<h2 id="install">Installation</h2>
+
+  <span class="remarque">Remarque: si vous avez déjà une version de Virtualbox, vous pouvez simplement importer la VM.</span>
+  <br/><br/>
+	 <ol>
+        <li>Copier le dossier atelier de la clef USB dans un path sans espace (ex: C:/atelier ou /home/vous/atelier) </li>
+        <li>Lancer l'installateur Virtualbox de votre OS</li>
+        <li>Lancer Virtualbox</li>
+        <li>Importer la VM dans virtualbox, et la démarrer</li>
+    </ol>
+
+    <h2 id="info">Quelques informations</h2>
+    
+    <p>Vous avez a disposition sur clef USB une VM Ubuntu préparée pour l'atelier. La VM contient:</p>
+    <ul>
+      <li>Un tomcat7</li>
+      <li>la JDK 1.7</li>
+      <li>Un projet java basé sur spring-boot</li>
+      <li>Sublime text</li>
+      <li>Eclipse MAT</li>
+    </ul>
+    <span class="remarque">Remarque: Le code java est ultra simplifié pour les besoins de démonstrations de l'analyse des problèmes qui peuvent survenir en production. Les erreurs de programmation java sont évidentes et vous ne les auriez certainement pas faites, par contre les analyses des problèmes de production simulés sont bien réelles.</span>
+
+    <p>Commandes utiles au projet:</p>
+    <ul>
+      <li>User: mixit; mot de passe: mixit</li>
+      <li>Stopper le tomcat: sudo service tomcat7 stop</li>
+      <li>Démarrer le tomcat: sudo service tomcat7 start</li>
+      <li>Logs du tomcat: /var/lib/tomcat7/logs</li>
+      <li>Compiler le projet:</li>
+    </ul>
+
+    <h2 id="jstack">Analyse des threads java: jstack</h2>
+
+    <ul>
+      <li>Tester le fonctionnement du tomcat: <pre>curl 127.0.0.1:8080/api/ping</pre></li>
+      <li>Trouver le process id du tomcat: <pre>ps aux | grep java</pre></li>
+      <li>Faire un dump de thread: <pre>jstack [process id] > mon_fichier_jstack.txt</pre></li>
+      <li>Pour chaque thread vous avez uns stacktrace java de ce type:</li>
+      <li>
+      <pre style="max-width: 900px">
+"http-apr-8002-exec-7" daemon prio=10 tid=0x00007fd7e57e8800 <strong>nid=0x3c9b</strong> waiting on condition [0x00007fd7f074c000]
+   java.lang.Thread.State: WAITING (parking)
+  at sun.misc.Unsafe.park(Native Method)
+  - parking to wait for  &lt;0x0000000683fa4e40&gt; (a java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)
+  at java.util.concurrent.locks.LockSupport.park(LockSupport.java:186)
+  at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2043)
+  at java.util.concurrent.LinkedBlockingQueue.take(LinkedBlockingQueue.java:442)
+  at org.apache.tomcat.util.threads.TaskQueue.take(TaskQueue.java:104)
+  at org.apache.tomcat.util.threads.TaskQueue.take(TaskQueue.java:32)
+  at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1068)
+  at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1130)
+  at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+  at java.lang.Thread.run(Thread.java:745)</pre>
+    </li>
+  </ul>
+
+     
+    <ul>
+      <li>Compter le nombre de thread en cours: <pre>grep -c "nid" mon_fichier_jstack.txt</pre></li>
+    </ul>
+
+      <span class="cours">
+      <strong>nid=0x.......</strong> est l'identifiant en hexadécimal de la thread.
+      <br/>Les threads ont différent statut:
+        <ul>
+          <li>RUNNING: la thread est en train de travailler</li>
+          <li>WAITING, PARKED: la thread est en attente d'un nouveau traitement</li>
+          <li>BLOCKED: la thread est en attente d'une ressource, actuellement réservée par une autre thread</li>
+        </ul>
+      jstack donne le même résultat qu'un kill -3 sur le process, l'avantage de jstack est que vous pouvez rediriger le résultat dans un fichier de vitre choix alors que le kill -3 écris dans la sortie standard (stdout.log pour tomcat)</span>
+      <br/>
+    <ul>
+      <li>Il est possible de voir les thread java via des commandes linux:<pre>ps -eLf | grep java</pre></li>
+      <li>Regarder la consommation mémoire et CPU globale de votre tomcat (process java):<pre>top</pre>
+      <li>Il est possible de voir la consommation mémoire et CPU des thread java:<pre>top -H</pre></li>
+      <li>Vous remarquez que la consommation CPU par thread java est très faible (&lt; 1%)</li>
+      <li>L'identifiant affiché sur le <span class="remarque">top -H</span> correspond au <span class="remarque">nid=</span> du dump de thread effectué avec jstack.... sauf que dans top il est en décimal alors que dans le jstack il est en héxadécimal.</li>
+      <li>Autre difficulté, les thread peuvent durer peu de temps, je vous conseille de procéder de cette façon:
+          <ul>
+            <li>sur un premier terminal préparer la commande jstack [PID] > mon_fichier.txt</li>
+            <li>sur un second terminal, faire le top -H</li>
+            <li>Lancer la commande jstack et de suite après faire CTRL+C sur le top -H : vous aurez une photo du top au moment du jstack et pourrez ensuite travailler calmement.</li>
+          </ul>
+      </li>
+      <li>Essayer de retrouver les threads vues dans le top -H dans le dump jstack</li>
+
+      <li>Appeler l'url 2 ou 3 fois: <pre>curl TODO</pre></li>
+      <li>Vous remarquerez dans le top -H que certaines thread java consomment plus de 1% de CPU</li>
+      <li>Faire une photo du top -H et son jstack associé</li>
+      <li>Retrouver la stacktrace des threads consommatrices de CPU, vous devez pouvoir trouver dans les sources le code en défaut.</li>
+      <li>Il n'est pas nécessaire de corriger les sources, les exercices sont indépendants.</li>
+      <li>Redémarrez le tomcat en fin d'exercice afin de revenir a un fonctionnement nominal.</li>
+      
+    </ul>
+
+    <h2 id="jstat">La mémoire java: tendance générale avec jstat</h2>
+
+    <ul>
+      <li>Tester le fonctionnement du tomcat: <pre>curl 127.0.0.1:8080/api/ping</pre></li>
+      <li>Trouver le process id du tomcat: <pre>ps aux | grep java</pre></li>
+      <li>Lancer un jstat:<pre>jstat -gc -h10 [process id] 2000</pre></li>
+      <ul>
+        <li>-h10: permet de répeter les entêtes toutes les 10 lignes</li>
+        <li>2000: permet d'avoir les mesures toutes les 2 secondes</li>
+      </ul>
+      <pre style="max-width: 900px; font-size:85%">
+  S0C    S1C       S0U    S1U      EC       EU        OC         OU       PC     PU       YGC     YGCT   FGC    FGCT     GCT   
+698880.0 698880.0  0.0    0.0   699392.0  5675.0  1886208.0   111333.4  81408.0 80929.4     23   11.637  73    840.071  851.708
+698880.0 698880.0  0.0    0.0   699392.0  5675.0  1886208.0   111333.4  81408.0 80929.4     23   11.637  73    840.071  851.708
+698880.0 698880.0  0.0    0.0   699392.0  5675.0  1886208.0   111333.4  81408.0 80929.4     23   11.637  73    840.071  851.708
+698880.0 698880.0  0.0    0.0   699392.0  5682.4  1886208.0   111333.4  81408.0 80929.4     23   11.637  73    840.071  851.708
+698880.0 698880.0  0.0    0.0   699392.0  6819.6  1886208.0   111333.4  81408.0 80929.6     23   11.637  73    840.071  851.708
+      </pre>
+    </ul>
+
+    <span class="cours">
+    <strong>Quelques notions de base:</strong> La mémoire java, nommée heap est divisée en 3 grandes parties:
+      <ul>
+        <li>Young: mémoire comprenant les objets nouvellement créés. Elle est redivisée en Survivor (S0 et S1) et Eden (E)</li>
+        <li>Old: mémoire comprenant les objets java qui existent depuis un certain temps.</li>
+        <li>Perm: mémoire des objets permanent: par exemple les définition de classe ou les constantes et les variables staiques (mot clef java: static)</li>
+      </ul>
+
+      Dans le jstat, les colonnes affichées sont:
+      <ul>
+        <li>EX,SX: mémoire young, il n'y a pas grand chose à déduire de cette partie.</li>
+        <li>OC: Old Current, taille de mémoire actuellement allouée pour la Old.</li>
+        <li>OU: Old Usage, taille de mémoire actuellement utilisée par la jvm pour la Old</li>
+        <li>Si OC = OU: OutOfMemory !</li>
+        <li>PC: Perm Current, taille de mémoire actuellement allouée pour la Perm.</li>
+        <li>PU: Perm Usage, taille de mémoire actuellement utilisée par la jvm pour la Perm</li>
+        <li>Si PC = PU: OutOfMemory !</li>
+      </ul>
+    </span>
+
+    <ul>
+      <li>Avec la RAM disponible de nos jours sur les machines, les chiffres du jstat deviennent difficilement lisible. Lancez maintenant un <pre>jstat -gcutil -h10 [process id] 2000</pre></li>
+      <li>L'occupation mémoire est maintenant affichée en pourcentage.</li>
+    </ul>
+
+    <h2 id="jmap">Mémoire java: exploration avec jmap</h2>
+    <span class="cours">Attention, autant les outils jstat et jstack ont peu d'impact sur la production, autant jmap est à manipuler avec précaution. En effet, cet outil permet de parcourir les objets présent dans la mémoire, il bloque donc l'execution du tomcat le temps de parcourir les objets.</span>
+    <br/>
+
+    <span class="cours">Dans les outils suivants, la mémoire est considérée comme un arbre: la racine (GC ROOT) étant le premier objet java lancé par la jvm (en faisant un raccourci: les threads du tomcat). Chaque instance d'une classe qui crée un objet en devient son parent. Par exemple, voici un service contenant une liste de personnes:<br/>
+    <img src="img/arbre_java.png" style="max-width:500px">
+    </span>
+
+    <ul>
+      <li>Lancez <pre>jmap -histo:live [process id]</pre></li>
+    </ul>
+
+    <ul>
+      <li>Lancez dans le dossier de votre choix <pre>jmap -dump:format=b,file=memoire.bin [PID]</pre></li>
+      <li>Vous allez pouvoir maintenant enfiler des bottes et mettre un casque pour faire de la spéléo dans la heap java</li>
+      <li>Lancez eclipse MAT (Memory Analyser Tool) et ouvrez le memoire.bin</li>
+    </ul>
+    <span class="cours">A partir de là je n'ai pas de recette magique, il faut se balader un peu partout pour arriver à déduire l'origine du problème. Dans le cadre de l'atelier la fuite mémoire est très facile à trouver, mais dans la réalité il faut pas mal chercher avant de comprendre ce qu'il se passe. Voici quand même quelques indications.</span>
+    
+    <ul>
+      <li>A l'ouverture du dump, gardez le premier choix "leak suspect"</li>
+      <li>Allez dans la vue histogram, cette vue permet d'avoir 3 informations:
+        <ul>
+            <li>Le nombre d'instances de chaques classes</li>
+            <li>La taille qu'occupe la classe</li>
+            <li>Shallow heap: la taille occupée par cette classe et toutes les classes filles</li>
+        </ul>
+
+      </li>
+    </ul>
+
+    </div><!--div qui décale la page pour avoir le sommaire lisible -->
+
+</body>
