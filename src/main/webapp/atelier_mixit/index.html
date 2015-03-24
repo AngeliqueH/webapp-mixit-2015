@@ -66,10 +66,10 @@
     <p>Commandes utiles au projet:</p>
     <ul>
       <li>User: mixit; mot de passe: mixit</li>
-      <li>Stopper le tomcat: sudo service tomcat7 stop</li>
-      <li>Démarrer le tomcat: sudo service tomcat7 start</li>
-      <li>Logs du tomcat: /var/lib/tomcat7/logs</li>
-      <li>Compiler le projet:</li>
+      <li>Stopper le tomcat: <pre>cd /home/mixit/Bureau/apache-tomcat-7.0.59/bin ; ./shutdown.sh</pre></li>
+      <li>Démarrer le tomcat: <pre>cd /home/mixit/Bureau/apache-tomcat-7.0.59/bin ; ./startup.sh</pre></li>
+      <li>Logs du tomcat: <pre>d /home/mixit/Bureau/apache-tomcat-7.0.59/logs</pre></li>
+      <li>Compiler le projet (normalement pas necessaire pour l'atelier):<pre>cd home/mixit/Bureau/webapp-mixit-2015; mvn clean install</pre></li>
     </ul>
 
     <h2 id="jstack">Analyse des threads java: jstack</h2>
