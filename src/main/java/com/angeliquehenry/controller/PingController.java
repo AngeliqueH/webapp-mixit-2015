@@ -16,7 +16,7 @@ public class PingController {
     @RequestMapping(value = "/api/ping")
     @ResponseBody
     String ping() {
-        return "OK";
+        return "Hello mix-it !";
     }
 
 }
