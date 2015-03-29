@@ -30,13 +30,7 @@
 
 	<h2 id="intro">Introduction</h2>
 
-  <p>Soyons honnête, qui s'inquiète de la consommation mémoire ou des threads générées par le code java que nous écrivons ? Très peu de monde, et pour une simple et bonne raison: en local ça fonctionne très bien !
-
-  <br/><br/>Tous les tests unitaires et fonctionnels sont au vert et le jenkins d'intégration continue dit que tout va bien. Sauf que.... en local... vous avez un utilisateur, en recette/validation fonctionnelle, vous avez 2 ou 3 utilisateurs en même temps, mais en prod tout d'un coup il y en a 1000 par minutes ! Et ça change tout !
-
-  <br/><br/>Et le pire, c'est qu'en prod on a en général qu'un accès ssh: exit les IDE graphiques avec des belles courbes, fini les outils en tout genre permettant le debug pas à pas !
-
-  <br/><br/>Cet atelier va vous permettre de prendre en main des outils inclu dans la JDK et en mode console sur deux grandes catégories de problèmes de production: la surconsommation CPU et la surconsommation de la mémoire.
+  Cet atelier va vous permettre de prendre en main des outils inclu dans la JDK et en mode console sur deux grandes catégories de problèmes de production: la surconsommation CPU et la surconsommation de la mémoire.
 
   <br/><br/>Tout au long de l'atelier vous allez travailler sur un tomcat parce que c'est un des serveurs d'application que je connais le mieux, mais les outils java fonctionnent pour toute jvm: vous pouvez les utiliser sur un jBoss, un elasticsearch ou un java -jar ...etc</p>
 
@@ -53,15 +47,15 @@
 
     <h2 id="info">Quelques informations</h2>
     
-    <p>Vous avez a disposition sur clef USB une VM Ubuntu préparée pour l'atelier. La VM contient:</p>
+    <p>Vous avez a disposition sur clef USB une VM Ubuntu préparée pour l'atelier. Tout ce qui est nécessaire se trouve sur le bureau (/home/mixit/Bureau)</p>
     <ul>
-      <li>Un tomcat7</li>
+      <li>Un tomcat7: apache-tomcat-7.0.59</li>
       <li>la JDK 1.7</li>
-      <li>Un projet java basé sur spring-boot</li>
-      <li>Sublime text</li>
-      <li>Eclipse MAT</li>
+      <li>Un projet java basé sur spring-boot: webapp-mixit-2015</li>
+      <li>Sublime text: Sublime Text 2</li>
+      <li>Eclipse MAT (Memory Analyzer Tools): </li>
     </ul>
-    <span class="remarque">Remarque: Le code java est ultra simplifié pour les besoins de démonstrations de l'analyse des problèmes qui peuvent survenir en production. Les erreurs de programmation java sont évidentes et vous ne les auriez certainement pas faites, par contre les analyses des problèmes de production simulés sont bien réelles.</span>
+    <span class="remarque">Remarque: Le code java de webapp-mixit-2015 est ultra simplifié pour les besoins de démonstrations de l'analyse des problèmes qui peuvent survenir en production. Les erreurs de programmation java sont évidentes et vous ne les auriez certainement pas faites, par contre les analyses des problèmes de production simulés sont bien réelles.</span>
 
     <p>Commandes utiles au projet:</p>
     <ul>
@@ -69,16 +63,16 @@
       <li>Stopper le tomcat: <pre>cd /home/mixit/Bureau/apache-tomcat-7.0.59/bin ; ./shutdown.sh</pre></li>
       <li>Démarrer le tomcat: <pre>cd /home/mixit/Bureau/apache-tomcat-7.0.59/bin ; ./startup.sh</pre></li>
       <li>Logs du tomcat: <pre>cd /home/mixit/Bureau/apache-tomcat-7.0.59/logs</pre></li>
-      <li>Compiler le projet (normalement pas necessaire pour l'atelier):<pre>cd home/mixit/Bureau/webapp-mixit-2015; mvn clean install</pre></li>
+      <li>Compiler le projet (normalement pas nécessaire pour l'atelier):<pre>cd home/mixit/Bureau/webapp-mixit-2015; mvn clean install</pre></li>
     </ul>
 
     <h2 id="jstack">Analyse des threads java: jstack</h2>
 
     <ul>
-      <li>Tester le fonctionnement du tomcat: <pre>curl 127.0.0.1:8080/api/ping</pre></li>
-      <li>Trouver le process id du tomcat: <pre>ps aux | grep java</pre></li>
-      <li>Faire un dump de thread: <pre>jstack [process id] > mon_fichier_jstack.txt</pre></li>
-      <li>Pour chaque thread vous avez une stacktrace java de ce type:
+      <li>Tester le fonctionnement du tomcat (s'il n'est pas démarré, cf commandes utiles au projet ci-dessus.): <pre>curl http://127.0.0.1:8080/api/ping<br/>Hello mix-it !</pre> </li>
+      <li>Trouver le process id du tomcat, et le noter: <pre>ps aux | grep java</pre></li>
+      <li>Faire un dump de thread: <pre>jstack <strong>[process id]</strong> > mon_fichier_jstack.txt</pre></li>
+      <li>Regardez le dump, pour chaque thread vous avez une stacktrace java de ce type:
       <pre style="max-width: 900px">
 "http-apr-8002-exec-7" daemon prio=10 tid=0x00007fd7e57e8800 <strong>nid=0x3c9b</strong> waiting on condition [0x00007fd7f074c000]
    java.lang.Thread.State: WAITING (parking)
@@ -98,7 +92,7 @@
 
      
     <ul>
-      <li>Compter le nombre de thread en cours: <pre>grep -c "nid" mon_fichier_jstack.txt</pre></li>
+      <li>Comptez le nombre de thread en cours: <pre>grep -c "nid" mon_fichier_jstack.txt</pre></li>
     </ul>
 
       <span class="cours">
@@ -112,26 +106,25 @@
       jstack donne le même résultat qu'un kill -3 sur le process, l'avantage de jstack est que vous pouvez rediriger le résultat dans un fichier de vitre choix alors que le kill -3 écris dans la sortie standard (stdout.log pour tomcat)</span>
       <br/>
     <ul>
-      <li>Il est possible de voir les thread java via des commandes linux:<pre>ps -eLf | grep java</pre></li>
-      <li>Regarder la consommation mémoire et CPU globale de votre tomcat (process java):<pre>top</pre>
-      <li>Il est possible de voir la consommation mémoire et CPU des thread java:<pre>top -H</pre></li>
+      <li>Regardez l'ensemble des thread java via la commandes linux:<pre>ps -eLf | grep java</pre></li>
+      <li>Regardez la consommation mémoire et CPU globale de votre tomcat (process java):<pre>top</pre>
+      <li>Puis regardez la consommation mémoire et CPU des thread java:<pre>top -H</pre></li>
       <li>Vous remarquez que la consommation CPU par thread java est très faible (&lt; 1%)</li>
-      <li>L'identifiant affiché sur le <span class="remarque">top -H</span> correspond au <span class="remarque">nid=</span> du dump de thread effectué avec jstack.... sauf que dans top il est en décimal alors que dans le jstack il est en héxadécimal.</li>
-      <li>Autre difficulté, les thread peuvent durer peu de temps, je vous conseille de procéder de cette façon:
+      <li>L'identifiant de thread affiché sur le <span class="remarque">top -H</span> correspond au <span class="remarque">nid=</span> du dump de thread effectué avec jstack.... sauf que dans top il est en décimal alors que dans le jstack il est en héxadécimal.</li>
+      <li>Nous allons maintenant faire correspondre une thread java du <strong>jstack (nid=)</strong> avec l'identifiant trouvé dans le <strong>top -H</strong> La petite difficulté est que les thread peuvent durer peu de temps, pour l'exercice les threads problématiques durent un temps infini mais je vous conseille de procéder de cette façon:
           <ul>
-            <li>sur un premier terminal préparer la commande jstack [PID] > mon_fichier.txt</li>
+            <li>Appeler l'url 2 ou 3 fois: <pre>curl http://127.0.0.1:8080/api/thread</pre></li>
+            <li>sur un premier terminal préparer la commande sans la lancer jstack [process id] > mon_fichier.txt</li>
             <li>sur un second terminal, faire le top -H</li>
             <li>Lancer la commande jstack et de suite après faire CTRL+C sur le top -H : vous aurez une photo du top au moment du jstack et pourrez ensuite travailler calmement.</li>
+            <li>Retrouver en convertissant l'identifiant du décimal à l'hexadécimal, les threads qui consomment fortement le cpu dans le dump, le nom de la tread devrait vous indiquer que vous avez trouvé :)</li>
+            <li>pour convertir du décimal (top -H) en hexadecimal (nid=), vous pouvez utiliser bc (ex: décimal 1234):<pre>echo "obase=16; 1234"|bc</pre></li>
           </ul>
-      </li>
-      <li>Essayer de retrouver les threads vues dans le top -H dans le dump jstack</li>
 
-      <li>Appeler l'url 2 ou 3 fois: <pre>curl TODO</pre></li>
-      <li>Vous remarquerez dans le top -H que certaines thread java consomment plus de 1% de CPU</li>
-      <li>Faire une photo du top -H et son jstack associé</li>
-      <li>Retrouver la stacktrace des threads consommatrices de CPU, vous devez pouvoir trouver dans les sources le code en défaut.</li>
-      <li>Il n'est pas nécessaire de corriger les sources, les exercices sont indépendants.</li>
-      <li>Redémarrez le tomcat en fin d'exercice afin de revenir a un fonctionnement nominal.</li>
+      </li>
+
+      <li>Il n'est pas nécessaire de corriger les sources java, les exercices sont indépendants.</li>
+      <li><strong>Redémarrez le tomcat en fin d'exercice afin de revenir a un fonctionnement nominal.</strong></li>
       
     </ul>
 
@@ -181,21 +174,30 @@
     </ul>
 
     <h2 id="jmap">Mémoire java: exploration avec jmap</h2>
-    <span class="cours">Attention, autant les outils jstat et jstack ont peu d'impact sur la production, autant jmap est à manipuler avec précaution. En effet, cet outil permet de parcourir les objets présent dans la mémoire, il bloque donc l'execution du tomcat le temps de parcourir les objets.</span>
+    <span class="cours">Attention, autant les outils jstat et jstack ont peu d'impact sur la production, autant jmap est à manipuler avec précaution. En effet, cet outil permet de parcourir les objets présent dans la mémoire, <strong>il bloque donc l'execution de la jvm (stop the world)</strong> le temps de parcourir les objets.</span>
     <br/>
 
     <span class="cours">Dans les outils suivants, la mémoire est considérée comme un arbre: la racine (GC ROOT) étant le premier objet java lancé par la jvm (en faisant un raccourci: les threads du tomcat). Chaque instance d'une classe qui crée un objet en devient son parent. Par exemple, voici un service contenant une liste de personnes:<br/>
     <img src="img/arbre_java.png" style="max-width:500px">
+    <br/>
+    Si on met à null le ArrayList, on voit bien que les objets enfants (Boule, Bill, Maman et son Papa) ne sont plus rattachés à rien: ils deviennent des objets "morts" et pourront etre nettoyés par le GC.
+    <br/>Par contre si on enlève l'objet Maman du ArrayList, étant donné que Manan est toujours liée à Boule: l'objet Maman reste vivant et ne peut pas &ecirc;tre nettoyé.
     </span>
-
+    <br>
     <ul>
+      <li>Lancez dans un terminal une boule infinie de curl: <pre>while true; do curl 127.0.0.1:8080/api/leak; sleep 1000; done;</pre></li>
+      <li>observez l'évolution de la mémoire avec jstat -gc : vous voyez beaucoup de GC passer, et le temps cumulé des GC augmente rapidement et le OU augmente strictement, malgrès les passages de GC ou full GC.</li>
+      <li>Nous allons maintenant regarder rapidement le contenu de la mémoire</li>
       <li>Lancez <pre>jmap -histo:live [process id]</pre></li>
+      <li>Vous obtenez la listes des objets vivants dans la heap, avec le nombre d'instances de chaques objets ainsi que la taille en bytes.</li>
     </ul>
 
     <ul>
-      <li>Lancez dans le dossier de votre choix <pre>jmap -dump:format=b,file=memoire.bin [PID]</pre></li>
-      <li>Vous allez pouvoir maintenant enfiler des bottes et mettre un casque pour faire de la spéléo dans la heap java</li>
-      <li>Lancez eclipse MAT (Memory Analyser Tool) et ouvrez le memoire.bin</li>
+      <li>Nous allons maintenant analyser en détail le contenu de la mémoire.</li>
+      <li>Lancez dans le dossier de votre choix <pre>jmap -dump:format=b,file=memoire1.bin [PID]</pre></li>
+      <li>Attendez quelques minutes et relancez avec un nom de fichier different:<pre>jmap -dump:format=b,file=memoire2.bin [PID]</pre></li>
+      <li>Vous allez pouvoir maintenant enfiler des bottes et mettre un casque pour faire de la spéléo dans la heap java :)</li>
+      <li>Lancez eclipse MAT (Memory Analyser Tool) et ouvrez le memoire1.bin</li>
     </ul>
     <span class="cours">A partir de là je n'ai pas de recette magique, il faut se balader un peu partout pour arriver à déduire l'origine du problème. Dans le cadre de l'atelier la fuite mémoire est très facile à trouver, mais dans la réalité il faut pas mal chercher avant de comprendre ce qu'il se passe. Voici quand même quelques indications.</span>
     
@@ -209,6 +211,8 @@
         </ul>
 
       </li>
+
+      <li>Vous pouvez aussi ouvrir memoire2.bin, puis dans la vue histogram il est possible de comparer les 2 dumps: ça permet de voir le delta entre les 2 dumps</li>
     </ul>
 
     </div><!--div qui décale la page pour avoir le sommaire lisible -->
