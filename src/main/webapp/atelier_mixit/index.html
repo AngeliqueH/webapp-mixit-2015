@@ -68,7 +68,7 @@
       <li>User: mixit; mot de passe: mixit</li>
       <li>Stopper le tomcat: <pre>cd /home/mixit/Bureau/apache-tomcat-7.0.59/bin ; ./shutdown.sh</pre></li>
       <li>Démarrer le tomcat: <pre>cd /home/mixit/Bureau/apache-tomcat-7.0.59/bin ; ./startup.sh</pre></li>
-      <li>Logs du tomcat: <pre>d /home/mixit/Bureau/apache-tomcat-7.0.59/logs</pre></li>
+      <li>Logs du tomcat: <pre>cd /home/mixit/Bureau/apache-tomcat-7.0.59/logs</pre></li>
       <li>Compiler le projet (normalement pas necessaire pour l'atelier):<pre>cd home/mixit/Bureau/webapp-mixit-2015; mvn clean install</pre></li>
     </ul>
 
@@ -78,8 +78,7 @@
       <li>Tester le fonctionnement du tomcat: <pre>curl 127.0.0.1:8080/api/ping</pre></li>
       <li>Trouver le process id du tomcat: <pre>ps aux | grep java</pre></li>
       <li>Faire un dump de thread: <pre>jstack [process id] > mon_fichier_jstack.txt</pre></li>
-      <li>Pour chaque thread vous avez uns stacktrace java de ce type:</li>
-      <li>
+      <li>Pour chaque thread vous avez une stacktrace java de ce type:
       <pre style="max-width: 900px">
 "http-apr-8002-exec-7" daemon prio=10 tid=0x00007fd7e57e8800 <strong>nid=0x3c9b</strong> waiting on condition [0x00007fd7f074c000]
    java.lang.Thread.State: WAITING (parking)
