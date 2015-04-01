@@ -15,12 +15,14 @@
 	
 
 <div data-spy="affix" class="alert alert-info" >
-  <a href="#legendes">Légendes</a><br/>
+  <a href="#intro">Introduction</a><br/>
   <a href="#install">Installation</a><br/>
   <a href="#info">Quelques infos</a><br/>
   <a href="#jstack">jstack</a><br/>
   <a href="#jstat">jstat</a><br/>
   <a href="#jmap">jmap</a><br/>
+  <a href="#jhat">jhat</a><br/>
+  <a href="#tomcat">Options de jvm</a><br/>
 
 </div>
 
@@ -30,13 +32,21 @@
 
 	<h2 id="intro">Introduction</h2>
 
-  Cet atelier va vous permettre de prendre en main des outils inclu dans la JDK et en mode console sur deux grandes catégories de problèmes de production: la surconsommation CPU et la surconsommation de la mémoire.
+  <p>Cet atelier va vous permettre de prendre en main des outils inclu dans la JDK et en mode console sur deux grandes catégories de problèmes de production: la surconsommation CPU et la surconsommation de la mémoire.
 
-  <br/><br/>Tout au long de l'atelier vous allez travailler sur un tomcat parce que c'est un des serveurs d'application que je connais le mieux, mais les outils java fonctionnent pour toute jvm: vous pouvez les utiliser sur un jBoss, un elasticsearch ou un java -jar ...etc</p>
+  <br/><br/>Tout au long de l'atelier vous allez travailler sur un tomcat parce que c'est un des serveurs d'application que je connais le mieux, mais les outils java fonctionnent pour toute jvm: vous pouvez les utiliser sur un jBoss, un elasticsearch ou un java -jar ...etc
+
+  <br/><br/>Références: 
+  <ul>
+    <li><a href="http://docs.oracle.com/javase/7/docs/technotes/tools/">Documentation officielle Oracle sur jstat, jstack, jmap, jhat et jps</a></li>
+    <li><a href="http://www.oracle.com/technetwork/java/javase/gc-tuning-6-140523.html">Documentation Oracle sur le GC</a></li>
+  </ul>
+
+  </p>
 
 	<h2 id="install">Installation</h2>
 
-  <span class="remarque">Remarque: si vous avez déjà une version de Virtualbox, vous pouvez simplement importer la VM.</span>
+  <span class="remarque">Remarque: si vous avez déjà une version de Virtualbox 4.3.X, vous pouvez simplement importer la VM.</span>
   <br/><br/>
 	 <ol>
         <li>Copier le dossier atelier de la clef USB dans un path sans espace (ex: C:/atelier ou /home/vous/atelier) </li>
@@ -219,6 +229,53 @@
       </li>
 
       <li>Vous pouvez aussi ouvrir memoire2.bin, puis dans la vue histogram il est possible de comparer les 2 dumps: ça permet de voir le delta entre les 2 dumps</li>
+    </ul>
+
+    <h2 id="jhat">Mémoire java: exploration avec jhat</h2>
+
+    <ul>
+      <li>Ouvrez le dump de mémoire avec jhat<pre>
+jhat memoire1.bin
+
+Reading from memoire1.bin...
+Dump file created Wed Apr 01 11:13:33 CEST 2015
+Snapshot read, resolving...
+Resolving 327178 objects...
+Chasing references, expect 65 dots.................................................................
+Eliminating duplicate references.................................................................
+Snapshot resolved.
+Started HTTP server <strong>on port 7000</strong>
+Server is ready.
+
+</pre></li>
+      <li>jhat lance un serveur en local permettant de naviguer dans la pile mémoire en mode web.</li>
+      <li>Dans firefox, ouvrez localhost:7000 (le port est indiqué par jhat en fin de démarrage)</li>
+      <li>Sur la page d'accueil il y a la liste des classes, puis tout en bas vous trouverez des liens vers d'autres analyses</li>
+      <li>Cliquez par exemple sur "Show heap histogram", vous retrouverez le nombre d'objet de chaque classes dans la Heap.</li>
+      <li>Détail important: jhat permet de parcourir les objets vivants et les objets morts(ne sont plus référencés) de la heap java, contrairement a eclise mat qui n'affiche que les objets vivants.</li> 
+    </ul>
+
+    <h2 id="tomcat">Des options de jvm utiles</h2>
+
+    <ul>
+      <li>Stoppez le tomcat:<pre>cd apache-tomcat-7.0.59/bin ; ./shutdown.sh</pre></li>
+      <li>Ajoutez dans les variables d'environnement les options java suivantes:
+
+        <pre>
+export JAVA_OPTS="-verbose:gc -XX:+PrintGCTimeStamps -XX:+PrintGCDetails -Xloggc:/home/mixit/Bureau/apache-tomcat-7.0.59/logs/GC_$(date '+%y%m%d_%H%M%S').log"</pre>
+
+      </li>
+      <li>Dans le terminal ou vous avez fait l'export, démarrez le tomcat:<pre>cd apache-tomcat-7.0.59/bin ; ./startup.sh</pre></li>
+      <li>Vérifiez la prise en compte des options:<pre>ps -aux | grep java</pre></li>
+      <li>Allez dans les logs:<pre>/home/mixit/Bureau/apache-tomcat-7.0.59/logs</pre></li>
+      <li>Un fichier GC_XXX a été créé, ouvrez le, il contient des lignes:
+<pre>
+302,529: [GC302,529: [DefNew: 14760K->738K(15936K), 0,0008210 secs] 36019K->21996K(51168K), 0,0059580 secs]
+</pre>
+      </li>
+      <li>302,529: temps depuis le démarrage du tomcat</li>
+      <li>36019K->21996K(51168K): ancienne taille de heap (new + old) -> nouvelle taille head (taille totale au moment du GC: young + old + perm)</li>
+      <li>0,0059580 secs: temps mis par le GC</li>
     </ul>
 
     </div><!--div qui décale la page pour avoir le sommaire lisible -->
