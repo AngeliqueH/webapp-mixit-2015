@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Découverte des outils de la JDK: jstack, jstat et jmap</title>
+  <title>Découverte des outils de la JDK : jstack, jstat et jmap</title>
   <meta charset="utf-8" />
   <link rel="stylesheet" href="css/bootstrap-theme.min.css" />
   <link rel="stylesheet" href="css/bootstrap.min.css" />
@@ -22,34 +22,34 @@
   <a href="#jstat">jstat</a><br/>
   <a href="#jmap">jmap</a><br/>
   <a href="#jhat">jhat</a><br/>
-  <a href="#tomcat">Options de jvm</a><br/>
+  <a href="#Tomcat">Options de jvm</a><br/>
 
 </div>
 
-<div style="padding-left:150px">
+<div style="padding-left :150px">
   
-  <h1>Atelier découverte des outils de la JDK: jstack, jstat et jmap</h1>
+  <h1>Atelier découverte des outils de la JDK : jstack, jstat et jmap</h1>
 
 	<h2 id="intro">Introduction</h2>
 
-  <p>Cet atelier va vous permettre de prendre en main des outils inclu dans la JDK et en mode console sur deux grandes catégories de problèmes de production: la surconsommation CPU et la surconsommation de la mémoire.
+  <p>Cet atelier va vous permettre de prendre en main des outils inclus dans la JDK et en mode console sur deux grandes catégories de problèmes de production : la surconsommation CPU et la surconsommation de la mémoire.
 
-  <br/><br/>Tout au long de l'atelier vous allez travailler sur un tomcat parce que c'est un des serveurs d'application que je connais le mieux, mais les outils java fonctionnent pour toute jvm: vous pouvez les utiliser sur un jBoss, un elasticsearch ou un java -jar ...etc
+  <br/><br/>Tout au long de l'atelier vous allez travailler sur un Tomcat parce que c'est un des serveurs d'application que je connais le mieux, mais les outils Java fonctionnent pour toute jvm : vous pouvez les utiliser sur un jBoss, un elasticsearch ou un Java -jar ...etc
 
-  <br/><br/>Références: 
+  <br/><br/>Références : 
   <ul>
-    <li><a href="http://docs.oracle.com/javase/7/docs/technotes/tools/">Documentation officielle Oracle sur jstat, jstack, jmap, jhat et jps</a></li>
-    <li><a href="http://www.oracle.com/technetwork/java/javase/gc-tuning-6-140523.html">Documentation Oracle sur le GC</a></li>
+    <li><a href="http ://docs.oracle.com/Javase/7/docs/technotes/tools/">Documentation officielle Oracle sur jstat, jstack, jmap, jhat et jps</a></li>
+    <li><a href="http ://www.oracle.com/technetwork/Java/Javase/gc-tuning-6-140523.html">Documentation Oracle sur le GC</a></li>
   </ul>
 
   </p>
 
 	<h2 id="install">Installation</h2>
 
-  <span class="remarque">Remarque: si vous avez déjà une version de Virtualbox 4.3.X, vous pouvez simplement importer la VM.</span>
+  <span class="remarque">Remarque : si vous avez déjà une version de Virtualbox 4.3.X, vous pouvez simplement importer la VM.</span>
   <br/><br/>
 	 <ol>
-        <li>Copier le dossier atelier de la clef USB dans un path sans espace (ex: C:/atelier ou /home/vous/atelier) </li>
+        <li>Copier le dossier atelier de la clef USB dans un path sans espace (ex : C :/atelier ou /home/vous/atelier) </li>
         <li>Lancer l'installateur Virtualbox de votre OS</li>
         <li>Lancer Virtualbox</li>
         <li>Importer la VM dans virtualbox, et la démarrer</li>
@@ -57,100 +57,100 @@
 
     <h2 id="info">Quelques informations</h2>
     
-    <p>Vous avez a disposition sur clef USB une VM Ubuntu préparée pour l'atelier. Tout ce qui est nécessaire se trouve sur le bureau (/home/mixit/Bureau)</p>
+    <p>Vous avez à disposition sur clef USB une VM Ubuntu préparée pour l'atelier. Tout ce qui est nécessaire se trouve sur le bureau (/home/mixit/Bureau)</p>
     <ul>
-      <li>Un tomcat7: apache-tomcat-7.0.59</li>
+      <li>Un Tomcat7 : apache-Tomcat-7.0.59</li>
       <li>la JDK 1.7</li>
-      <li>Un projet java basé sur spring-boot: webapp-mixit-2015</li>
-      <li>Sublime text: Sublime Text 2</li>
-      <li>Eclipse MAT (Memory Analyzer Tools): mat</li>
+      <li>Un projet Java basé sur spring-boot : webapp-mixit-2015</li>
+      <li>Sublime text : Sublime Text 2</li>
+      <li>Eclipse MAT (Memory Analyzer Tools) : mat</li>
     </ul>
-    <span class="remarque">Remarque: Le code java de webapp-mixit-2015 est ultra simplifié pour les besoins de démonstrations de l'analyse des problèmes qui peuvent survenir en production. Les erreurs de programmation java sont évidentes et vous ne les auriez certainement pas faites, par contre les analyses des problèmes de production simulés sont bien réelles.</span>
+    <span class="remarque">Remarque : Le code Java de webapp-mixit-2015 est ultra simplifié pour les besoins de démonstration de l'analyse des problèmes qui peuvent survenir en production. Les erreurs de programmation Java sont évidentes et vous ne les auriez certainement pas faites, par contre les analyses des problèmes de production simulés sont bien réelles.</span>
 
-    <p>Commandes utiles au projet:</p>
+    <p>Commandes utiles au projet :</p>
     <ul>
-      <li>User: mixit; mot de passe: mixit</li>
-      <li>Stopper le tomcat: <pre>cd /home/mixit/Bureau/apache-tomcat-7.0.59/bin ; ./shutdown.sh</pre></li>
-      <li>Démarrer le tomcat: <pre>cd /home/mixit/Bureau/apache-tomcat-7.0.59/bin ; ./startup.sh</pre></li>
-      <li>Logs du tomcat: <pre>cd /home/mixit/Bureau/apache-tomcat-7.0.59/logs</pre></li>
-      <li>Compiler le projet (normalement pas nécessaire pour l'atelier):<pre>cd home/mixit/Bureau/webapp-mixit-2015; mvn clean install</pre></li>
+      <li>User : mixit; mot de passe : mixit</li>
+      <li>Stopper le Tomcat : <pre>cd /home/mixit/Bureau/apache-Tomcat-7.0.59/bin ; ./shutdown.sh</pre></li>
+      <li>Démarrer le Tomcat : <pre>cd /home/mixit/Bureau/apache-Tomcat-7.0.59/bin ; ./startup.sh</pre></li>
+      <li>Logs du Tomcat : <pre>cd /home/mixit/Bureau/apache-Tomcat-7.0.59/logs</pre></li>
+      <li>Compiler le projet (normalement pas nécessaire pour l'atelier) :<pre>cd home/mixit/Bureau/webapp-mixit-2015; mvn clean install</pre></li>
     </ul>
 
-    <h2 id="jstack">Analyse des threads java: jstack</h2>
+    <h2 id="jstack">Analyse des threads Java : jstack</h2>
 
     <ul>
-      <li>Tester le fonctionnement du tomcat (s'il n'est pas démarré, cf commandes utiles au projet ci-dessus.): <pre>curl http://127.0.0.1:8080/api/ping<br/>Hello mix-it !</pre> </li>
-      <li>Trouver le process id du tomcat, et le noter: <pre>ps aux | grep java</pre></li>
-      <li>Les process id java peuvent aussi etre listés avec un outil de la JDK, lancez: <pre>jps</pre></li>
-      <li>Faire un dump de thread: <pre>jstack <strong>[process id]</strong> > mon_fichier_jstack.txt</pre></li>
-      <li>Regardez le dump, pour chaque thread vous avez une stacktrace java de ce type:
-      <pre style="max-width: 900px">
+      <li>Tester le fonctionnement du Tomcat (s'il n'est pas démarré, cf commandes utiles au projet ci-dessus.) : <pre>curl http ://127.0.0.1 :8080/api/ping<br/>Hello mix-it !</pre> </li>
+      <li>Trouver le process id du Tomcat, et le noter : <pre>ps aux | grep Java</pre></li>
+      <li>Les process id Java peuvent aussi etre listés avec un outil de la JDK, lancez : <pre>jps</pre></li>
+      <li>Faire un dump de thread : <pre>jstack <strong>[process id]</strong> > mon_fichier_jstack.txt</pre></li>
+      <li>Regardez le dump, pour chaque thread vous avez une stacktrace Java de ce type :
+      <pre style="max-width : 900px">
 "http-apr-8002-exec-7" daemon prio=10 tid=0x00007fd7e57e8800 <strong>nid=0x3c9b</strong> waiting on condition [0x00007fd7f074c000]
-   java.lang.Thread.State: WAITING (parking)
+   Java.lang.Thread.State : WAITING (parking)
   at sun.misc.Unsafe.park(Native Method)
-  - parking to wait for  &lt;0x0000000683fa4e40&gt; (a java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)
-  at java.util.concurrent.locks.LockSupport.park(LockSupport.java:186)
-  at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2043)
-  at java.util.concurrent.LinkedBlockingQueue.take(LinkedBlockingQueue.java:442)
-  at org.apache.tomcat.util.threads.TaskQueue.take(TaskQueue.java:104)
-  at org.apache.tomcat.util.threads.TaskQueue.take(TaskQueue.java:32)
-  at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1068)
-  at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1130)
-  at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
-  at java.lang.Thread.run(Thread.java:745)</pre>
+  - parking to wait for  &lt;0x0000000683fa4e40&gt; (a Java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)
+  at Java.util.concurrent.locks.LockSupport.park(LockSupport.Java :186)
+  at Java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.Java :2043)
+  at Java.util.concurrent.LinkedBlockingQueue.take(LinkedBlockingQueue.Java :442)
+  at org.apache.Tomcat.util.threads.TaskQueue.take(TaskQueue.Java :104)
+  at org.apache.Tomcat.util.threads.TaskQueue.take(TaskQueue.Java :32)
+  at Java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.Java :1068)
+  at Java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.Java :1130)
+  at Java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.Java :615)
+  at Java.lang.Thread.run(Thread.Java :745)</pre>
     </li>
   </ul>
 
      
     <ul>
-      <li>Comptez le nombre de thread en cours: <pre>grep -c "nid" mon_fichier_jstack.txt</pre></li>
+      <li>Comptez le nombre de thread en cours : <pre>grep -c "nid" mon_fichier_jstack.txt</pre></li>
     </ul>
 
       <span class="cours">
       <strong>nid=0x.......</strong> est l'identifiant en hexadécimal de la thread.
-      <br/>Les threads ont différent statut:
+      <br/>Les threads ont différent statuts :
         <ul>
-          <li>RUNNING: la thread est en train de travailler</li>
-          <li>WAITING, PARKED: la thread est en attente d'un nouveau traitement</li>
-          <li>BLOCKED: la thread est en attente d'une ressource, actuellement réservée par une autre thread</li>
+          <li>RUNNING : la thread est en train de travailler</li>
+          <li>WAITING, PARKED : la thread est en attente d'un nouveau traitement</li>
+          <li>BLOCKED : la thread est en attente d'une ressource, actuellement réservée par une autre thread</li>
         </ul>
-      jstack donne le même résultat qu'un kill -3 sur le process, l'avantage de jstack est que vous pouvez rediriger le résultat dans un fichier de vitre choix alors que le kill -3 écris dans la sortie standard (stdout.log pour tomcat)</span>
+      jstack donne le même résultat qu'un kill -3 sur le process, l'avantage de jstack est que vous pouvez rediriger le résultat dans un fichier de vitre choix alors que le kill -3 écris dans la sortie standard (stdout.log pour Tomcat)</span>
       <br/>
     <ul>
-      <li>Regardez l'ensemble des thread java via la commandes linux:<pre>ps -eLf | grep java</pre></li>
-      <li>Regardez la consommation mémoire et CPU globale de votre tomcat (process java):<pre>top</pre>
-      <li>Puis regardez la consommation mémoire et CPU des thread java:<pre>top -H</pre></li>
-      <li>Vous remarquez que la consommation CPU par thread java est très faible (&lt; 1%)</li>
+      <li>Regardez l'ensemble des thread Java via la commandes linux :<pre>ps -eLf | grep Java</pre></li>
+      <li>Regardez la consommation mémoire et CPU globale de votre Tomcat (process Java) :<pre>top</pre>
+      <li>Puis regardez la consommation mémoire et CPU des thread Java :<pre>top -H</pre></li>
+      <li>Vous remarquez que la consommation CPU par thread Java est très faible (&lt; 1%)</li>
       <li>L'identifiant de thread affiché sur le <span class="remarque">top -H</span> correspond au <span class="remarque">nid=</span> du dump de thread effectué avec jstack.... sauf que dans top il est en décimal alors que dans le jstack il est en héxadécimal.</li>
-      <li>Nous allons maintenant faire correspondre une thread java du <strong>jstack (nid=)</strong> avec l'identifiant trouvé dans le <strong>top -H</strong> La petite difficulté est que les thread peuvent durer peu de temps, pour l'exercice les threads problématiques durent un temps infini mais je vous conseille de procéder de cette façon:
+      <li>Nous allons maintenant faire correspondre une thread Java du <strong>jstack (nid=)</strong> avec l'identifiant trouvé dans le <strong>top -H</strong>. La petite difficulté est que les thread peuvent durer peu de temps, pour l'exercice les threads problématiques durent un temps infini mais je vous conseille de procéder de cette façon :
           <ul>
-            <li>Appeler l'url 2 ou 3 fois: <pre>curl http://127.0.0.1:8080/api/thread</pre></li>
+            <li>Appeler l'url 2 ou 3 fois : <pre>curl http ://127.0.0.1 :8080/api/thread</pre></li>
             <li>sur un premier terminal préparer la commande sans la lancer jstack [process id] > mon_fichier.txt</li>
             <li>sur un second terminal, faire le top -H</li>
             <li>Lancer la commande jstack et de suite après faire CTRL+C sur le top -H : vous aurez une photo du top au moment du jstack et pourrez ensuite travailler calmement.</li>
             <li>Retrouver en convertissant l'identifiant du décimal à l'hexadécimal, les 2 ou 3 threads qui consomment fortement le cpu dans le dump, le nom de la thread devrait vous indiquer que vous avez trouvé :)</li>
-            <li>pour convertir du décimal (top -H) en hexadecimal (nid=), vous pouvez utiliser bc (ex: décimal 1234):<pre>echo "obase=16; 1234"|bc</pre></li>
-            <li>Attention, bien utiliser la valeur hexadécimale avec les <strong>lettres en minuscules</strong> (ex:3c9b ok)</li>
+            <li>pour convertir du décimal (top -H) en hexadecimal (nid=), vous pouvez utiliser bc (ex : décimal 1234) :<pre>echo "obase=16; 1234"|bc</pre></li>
+            <li>Attention, bien utiliser la valeur hexadécimale avec les <strong>lettres en minuscules</strong> (ex :3c9b ok)</li>
           </ul>
 
       </li>
 
-      <li>Il n'est pas nécessaire de corriger les sources java, les exercices sont indépendants.</li>
-      <li><strong>Redémarrez le tomcat en fin d'exercice afin de revenir a un fonctionnement nominal.</strong></li>
+      <li>Il n'est pas nécessaire de corriger les sources Java, les exercices sont indépendants.</li>
+      <li><strong>Redémarrez le Tomcat en fin d'exercice afin de revenir à un fonctionnement nominal.</strong></li>
       
     </ul>
 
-    <h2 id="jstat">La mémoire java: tendance générale avec jstat</h2>
+    <h2 id="jstat">La mémoire Java : tendance générale avec jstat</h2>
 
     <ul>
-      <li>Tester le fonctionnement du tomcat: <pre>curl 127.0.0.1:8080/api/ping</pre></li>
-      <li>Trouver le process id du tomcat: <pre>ps aux | grep java</pre></li>
-      <li>Lancer un jstat:<pre>jstat -gc -h10 [process id] 2000</pre></li>
+      <li>Tester le fonctionnement du Tomcat : <pre>curl 127.0.0.1 :8080/api/ping</pre></li>
+      <li>Trouver le process id du Tomcat : <pre>ps aux | grep Java</pre></li>
+      <li>Lancer un jstat :<pre>jstat -gc -h10 [process id] 2000</pre></li>
       <ul>
-        <li>-h10: permet de répeter les entêtes toutes les 10 lignes</li>
-        <li>2000: permet d'avoir les mesures toutes les 2 secondes</li>
+        <li>-h10 : permet de répeter les entêtes toutes les 10 lignes</li>
+        <li>2000 : permet d'avoir les mesures toutes les 2 secondes</li>
       </ul>
-      <pre style="max-width: 900px; font-size:85%">
+      <pre style="max-width : 900px; font-size :85%">
   S0C    S1C       S0U    S1U      EC       EU        OC         OU       PC     PU       YGC     YGCT   FGC    FGCT     GCT   
 698880.0 698880.0  0.0    0.0   699392.0  5675.0  1886208.0   111333.4  81408.0 80929.4     23   11.637  73    840.071  851.708
 698880.0 698880.0  0.0    0.0   699392.0  5675.0  1886208.0   111333.4  81408.0 80929.4     23   11.637  73    840.071  851.708
@@ -161,27 +161,27 @@
     </ul>
 
     <span class="cours">
-    <strong>Quelques notions de base:</strong> La mémoire java, nommée heap est divisée en 3 grandes parties:
+    <strong>Quelques notions de base :</strong> La mémoire Java, nommée heap est divisée en 3 grandes parties :
       <ul>
-        <li>Young: mémoire comprenant les objets nouvellement créés. Elle est redivisée en Survivor (S0 et S1) et Eden (E)</li>
-        <li>Old: mémoire comprenant les objets java qui existent depuis un certain temps.</li>
-        <li>Perm: mémoire des objets permanent: par exemple les définition de classe ou les constantes et les variables staiques (mot clef java: static)</li>
+        <li>Young : mémoire comprenant les objets nouvellement créés. Elle est redivisée en Survivor (S0 et S1) et Eden (E)</li>
+        <li>Old : mémoire comprenant les objets Java qui existent depuis un certain temps.</li>
+        <li>Perm : mémoire des objets permanent : par exemple les définition de classe ou les constantes et les variables staiques (mot clef Java : static)</li>
       </ul>
 
-      Dans le jstat, les colonnes affichées sont:
+      Dans le jstat, les colonnes affichées sont :
       <ul>
-        <li>EX,SX: mémoire young, il n'y a pas grand chose à déduire de cette partie.</li>
-        <li>OC: Old Current, taille de mémoire actuellement allouée pour la Old.</li>
-        <li>OU: Old Usage, taille de mémoire actuellement utilisée par la jvm pour la Old</li>
-        <li>Si OC = OU: OutOfMemory !</li>
-        <li>PC: Perm Current, taille de mémoire actuellement allouée pour la Perm.</li>
-        <li>PU: Perm Usage, taille de mémoire actuellement utilisée par la jvm pour la Perm</li>
-        <li>Si PC = PU: OutOfMemory !</li>
-        <li>YGC: nombre de young GC depuis le lancement du tomcat</li>
-        <li>YGCT: temps cumulé passé à faire du young GC depuis le lancement du tomcat</li>
-        <li>FGC: nombre de full GC depuis le lancement du tomcat</li>
-        <li>FGCT: temps cumulé passé à faire du full GC depuis le lancement du tomcat</li>
-        <li>GCT: temps cumulé de young GC et full GC depuis le lancement du tomcat</li>
+        <li>EX,SX : mémoire young, il n'y a pas grand chose à déduire de cette partie.</li>
+        <li>OC : Old Current, taille de mémoire actuellement allouée pour la Old.</li>
+        <li>OU : Old Usage, taille de mémoire actuellement utilisée par la jvm pour la Old</li>
+        <li>Si OC = OU : OutOfMemory !</li>
+        <li>PC : Perm Current, taille de mémoire actuellement allouée pour la Perm.</li>
+        <li>PU : Perm Usage, taille de mémoire actuellement utilisée par la jvm pour la Perm</li>
+        <li>Si PC = PU : OutOfMemory !</li>
+        <li>YGC : nombre de young GC depuis le lancement du Tomcat</li>
+        <li>YGCT : temps cumulé passé à faire du young GC depuis le lancement du Tomcat</li>
+        <li>FGC : nombre de full GC depuis le lancement du Tomcat</li>
+        <li>FGCT : temps cumulé passé à faire du full GC depuis le lancement du Tomcat</li>
+        <li>GCT : temps cumulé de young GC et full GC depuis le lancement du Tomcat</li>
       </ul>
     </span>
 
@@ -190,56 +190,56 @@
       <li>L'occupation mémoire est maintenant affichée en pourcentage.</li>
     </ul>
 
-    <h2 id="jmap">Mémoire java: exploration avec jmap</h2>
+    <h2 id="jmap">Mémoire Java : exploration avec jmap</h2>
     <span class="cours">Attention, autant les outils jstat et jstack ont peu d'impact sur la production, autant jmap est à manipuler avec précaution. En effet, cet outil permet de parcourir les objets présent dans la mémoire, <strong>il bloque donc l'execution de la jvm (stop the world)</strong> le temps de parcourir les objets.</span>
     <br/>
 
-    <span class="cours">Dans les outils suivants, la mémoire est considérée comme un arbre: la racine (GC ROOT) étant le premier objet java lancé par la jvm (en faisant un raccourci: les threads du tomcat). Chaque instance d'une classe qui crée un objet en devient son parent. Par exemple, voici un service contenant une liste de personnes:<br/>
-    <img src="img/arbre_java.png" style="max-width:500px">
+    <span class="cours">Dans les outils suivants, la mémoire est considérée comme un arbre : la racine (GC ROOT) étant le premier objet Java lancé par la jvm (en faisant un raccourci : les threads du Tomcat). Chaque instance d'une classe qui crée un objet en devient son parent. Par exemple, voici un service contenant une liste de personnes :<br/>
+    <img src="img/arbre_Java.png" style="max-width :500px">
     <br/>
-    Si on met à null le ArrayList, on voit bien que les objets enfants (Boule, Bill, Maman et son Papa) ne sont plus rattachés à rien: ils deviennent des objets "morts" et pourront etre nettoyés par le GC.
-    <br/>Par contre si on enlève l'objet Maman du ArrayList, étant donné que Maman est toujours liée à Boule: l'objet Maman reste vivant et ne peut pas &ecirc;tre nettoyé.
+    Si on met à null le ArrayList, on voit bien que les objets enfants (Boule, Bill, Maman et son Papa) ne sont plus rattachés à rien : ils deviennent des objets "morts" et pourront etre nettoyés par le GC.
+    <br/>Par contre si on enlève l'objet Maman du ArrayList, étant donné que Maman est toujours liée à Boule : l'objet Maman reste vivant et ne peut pas &ecirc;tre nettoyé.
     </span>
     <br>
     <ul>
-      <li>Lancez dans un terminal une boule infinie de curl: <pre>while true; do curl 127.0.0.1:8080/api/leak; sleep 1; done;</pre></li>
+      <li>Lancez dans un terminal une boule infinie de curl : <pre>while true; do curl 127.0.0.1 :8080/api/leak; sleep 1; done;</pre></li>
       <li>observez l'évolution de la mémoire avec jstat -gc : vous voyez beaucoup de GC passer, et le temps cumulé des GC augmente rapidement et le OU augmente strictement, malgrès les passages de GC ou full GC.</li>
       <li>Nous allons maintenant regarder rapidement le contenu de la mémoire</li>
-      <li>Lancez <pre>jmap -histo:live [process id]</pre></li>
-      <li>Vous obtenez la listes des objets vivants dans la heap, avec le nombre d'instances de chaques objets ainsi que la taille en bytes.</li>
+      <li>Lancez <pre>jmap -histo :live [process id]</pre></li>
+      <li>Vous obtenez la liste des objets vivants dans la heap, avec le nombre d'instances de chaques objets ainsi que la taille en bytes.</li>
     </ul>
 
     <ul>
       <li>Nous allons maintenant analyser en détail le contenu de la mémoire.</li>
-      <li>Lancez dans le dossier de votre choix <pre>jmap -dump:format=b,file=memoire1.bin [PID]</pre></li>
-      <li>Attendez quelques minutes et relancez avec un nom de fichier different:<pre>jmap -dump:format=b,file=memoire2.bin [PID]</pre></li>
-      <li>Vous allez pouvoir maintenant enfiler des bottes et mettre un casque pour faire de la spéléo dans la heap java :)</li>
+      <li>Lancez dans le dossier de votre choix <pre>jmap -dump :format=b,file=memoire1.bin [PID]</pre></li>
+      <li>Attendez quelques minutes et relancez avec un nom de fichier different :<pre>jmap -dump :format=b,file=memoire2.bin [PID]</pre></li>
+      <li>Vous allez pouvoir maintenant enfiler des bottes et mettre un casque pour faire de la spéléo dans la heap Java :)</li>
       <li>Lancez eclipse MAT (Memory Analyser Tool) et ouvrez le memoire1.bin</li>
     </ul>
     <span class="cours">A partir de là je n'ai pas de recette magique, il faut se balader un peu partout pour arriver à déduire l'origine du problème. Dans le cadre de l'atelier la fuite mémoire est très facile à trouver, mais dans la réalité il faut pas mal chercher avant de comprendre ce qu'il se passe. Voici quand même quelques indications.</span>
     
     <ul>
       <li>A l'ouverture du dump, gardez le premier choix "Leak Suspects Report"</li>
-      <li>Allez dans la vue histogram, cette vue permet d'avoir 3 informations:
+      <li>Allez dans la vue histogram, cette vue permet d'avoir 3 informations :
         <ul>
             <li>Le nombre d'instances de chaques classes</li>
             <li>La taille qu'occupe la classe</li>
-            <li>Shallow heap: la taille occupée par cette classe et toutes les classes filles</li>
+            <li>Shallow heap : la taille occupée par cette classe et toutes les classes filles</li>
         </ul>
 
       </li>
 
-      <li>Vous pouvez aussi ouvrir memoire2.bin, puis dans la vue histogram il est possible de comparer les 2 dumps: ça permet de voir le delta entre les 2 dumps</li>
+      <li>Vous pouvez aussi ouvrir memoire2.bin, puis dans la vue histogram il est possible de comparer les 2 dumps : ça permet de voir le delta entre les 2 dumps</li>
     </ul>
 
-    <h2 id="jhat">Mémoire java: exploration avec jhat</h2>
+    <h2 id="jhat">Mémoire Java : exploration avec jhat</h2>
 
     <ul>
       <li>Ouvrez le dump de mémoire avec jhat<pre>
 jhat memoire1.bin
 
 Reading from memoire1.bin...
-Dump file created Wed Apr 01 11:13:33 CEST 2015
+Dump file created Wed Apr 01 11 :13 :33 CEST 2015
 Snapshot read, resolving...
 Resolving 327178 objects...
 Chasing references, expect 65 dots.................................................................
@@ -250,33 +250,33 @@ Server is ready.
 
 </pre></li>
       <li>jhat lance un serveur en local permettant de naviguer dans la pile mémoire en mode web.</li>
-      <li>Dans firefox, ouvrez localhost:7000 (le port est indiqué par jhat en fin de démarrage)</li>
+      <li>Dans firefox, ouvrez localhost :7000 (le port est indiqué par jhat en fin de démarrage)</li>
       <li>Sur la page d'accueil il y a la liste des classes, puis tout en bas vous trouverez des liens vers d'autres analyses</li>
       <li>Cliquez par exemple sur "Show heap histogram", vous retrouverez le nombre d'objet de chaque classes dans la Heap.</li>
-      <li>Détail important: jhat permet de parcourir les objets vivants et les objets morts(ne sont plus référencés) de la heap java, contrairement a eclise mat qui n'affiche que les objets vivants.</li> 
+      <li>Détail important : jhat permet de parcourir les objets vivants et les objets morts(ne sont plus référencés) de la heap Java, contrairement a eclise mat qui n'affiche que les objets vivants.</li> 
     </ul>
 
-    <h2 id="tomcat">Des options de jvm utiles</h2>
+    <h2 id="Tomcat">Des options de jvm utiles</h2>
 
     <ul>
-      <li>Stoppez le tomcat:<pre>cd apache-tomcat-7.0.59/bin ; ./shutdown.sh</pre></li>
-      <li>Ajoutez dans les variables d'environnement les options java suivantes:
+      <li>Stoppez le Tomcat :<pre>cd apache-Tomcat-7.0.59/bin ; ./shutdown.sh</pre></li>
+      <li>Ajoutez dans les variables d'environnement les options Java suivantes :
 
-        <pre style="max-width: 900px">
-export JAVA_OPTS="-verbose:gc -XX:+PrintGCTimeStamps -XX:+PrintGCDetails -Xloggc:/home/mixit/Bureau/apache-tomcat-7.0.59/logs/GC_$(date '+%y%m%d_%H%M%S').log"</pre>
+        <pre style="max-width : 900px">
+export Java_OPTS="-verbose :gc -XX :+PrintGCTimeStamps -XX :+PrintGCDetails -Xloggc :/home/mixit/Bureau/apache-Tomcat-7.0.59/logs/GC_$(date '+%y%m%d_%H%M%S').log"</pre>
 
       </li>
-      <li>Dans le terminal ou vous avez fait l'export, démarrez le tomcat:<pre>cd apache-tomcat-7.0.59/bin ; ./startup.sh</pre></li>
-      <li>Vérifiez la prise en compte des options:<pre>ps -aux | grep java</pre></li>
-      <li>Allez dans les logs:<pre>/home/mixit/Bureau/apache-tomcat-7.0.59/logs</pre></li>
-      <li>Un fichier GC_XXX a été créé, ouvrez le, il contient des lignes:
-<pre style="max-width: 900px">
-302,529: [GC302,529: [DefNew: 14760K->738K(15936K), 0,0008210 secs] 36019K->21996K(51168K), 0,0059580 secs]
+      <li>Dans le terminal ou vous avez fait l'export, démarrez le Tomcat :<pre>cd apache-Tomcat-7.0.59/bin ; ./startup.sh</pre></li>
+      <li>Vérifiez la prise en compte des options :<pre>ps -aux | grep Java</pre></li>
+      <li>Allez dans les logs :<pre>/home/mixit/Bureau/apache-Tomcat-7.0.59/logs</pre></li>
+      <li>Un fichier GC_XXX a été créé, ouvrez le, il contient des lignes :
+<pre style="max-width : 900px">
+302,529 : [GC302,529 : [DefNew : 14760K->738K(15936K), 0,0008210 secs] 36019K->21996K(51168K), 0,0059580 secs]
 </pre>
       </li>
-      <li>302,529: temps depuis le démarrage du tomcat</li>
-      <li>36019K->21996K(51168K): ancienne taille de heap (new + old) -> nouvelle taille head (taille totale au moment du GC: young + old + perm)</li>
-      <li>0,0059580 secs: temps mis par le GC</li>
+      <li>302,529 : temps depuis le démarrage du Tomcat</li>
+      <li>36019K->21996K(51168K) : ancienne taille de heap (new + old) -> nouvelle taille head (taille totale au moment du GC : young + old + perm)</li>
+      <li>0,0059580 secs : temps mis par le GC</li>
     </ul>
 
     </div><!--div qui décale la page pour avoir le sommaire lisible -->
