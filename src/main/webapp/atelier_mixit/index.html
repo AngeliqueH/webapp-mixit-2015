@@ -262,7 +262,7 @@ Server is ready.
       <li>Stoppez le tomcat:<pre>cd apache-tomcat-7.0.59/bin ; ./shutdown.sh</pre></li>
       <li>Ajoutez dans les variables d'environnement les options java suivantes:
 
-        <pre>
+        <pre style="max-width: 900px">
 export JAVA_OPTS="-verbose:gc -XX:+PrintGCTimeStamps -XX:+PrintGCDetails -Xloggc:/home/mixit/Bureau/apache-tomcat-7.0.59/logs/GC_$(date '+%y%m%d_%H%M%S').log"</pre>
 
       </li>
@@ -270,7 +270,7 @@ export JAVA_OPTS="-verbose:gc -XX:+PrintGCTimeStamps -XX:+PrintGCDetails -Xloggc
       <li>Vérifiez la prise en compte des options:<pre>ps -aux | grep java</pre></li>
       <li>Allez dans les logs:<pre>/home/mixit/Bureau/apache-tomcat-7.0.59/logs</pre></li>
       <li>Un fichier GC_XXX a été créé, ouvrez le, il contient des lignes:
-<pre>
+<pre style="max-width: 900px">
 302,529: [GC302,529: [DefNew: 14760K->738K(15936K), 0,0008210 secs] 36019K->21996K(51168K), 0,0059580 secs]
 </pre>
       </li>
