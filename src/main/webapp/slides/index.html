@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Atelier outils de la JDK - Mix-it 2015</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="components/normalize-css/normalize.css" />
+  <link rel="stylesheet" href="components/font-awesome/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="components/highlightjs/styles/tomorrow.css" />
+  <link rel="stylesheet" href="css/ruban.min.css" />
+  <link rel="stylesheet" href="css/my-theme.css" />
+  <link rel="stylesheet" href="css/ruban-print.min.css" media="print" />
+  <style>
+    section {
+      border-left: 1em solid #434343;
+      border-right: 1em solid #434343;
+    }
+
+    .pagination {
+      right: 2.6em;
+    }
+
+    pre code {
+      background-color: inherit;
+    }
+
+    pre .xml .javascript {
+      opacity: 1;
+    }
+
+    #examples ul {
+      padding-left: 0;
+    }
+
+    #getting-started-unleash-your-power {
+      color: white;
+      background-color: #0071B5;
+      border-color: white;
+    }
+
+    #getting-started-unleash-your-power strong {
+      text-shadow: 0.06em 0.06em 0 #0071B5, 0.07em 0.07em 0 #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <section id="ruban">
+    <h1>Mise en place</h1>
+    <ul>
+      <li><i class="fa fa-circle"></i> Copiez le contenu de la clef USB dans un dossier sans espaces.</li>
+      <li><i class="fa fa-circle"></i> Installez Virtualbox > 4.3 si vous ne l'avez pas déjà (fourni sur la clef)</li>
+      <li><i class="fa fa-circle"></i> Importez Lubuntu mixit.ova sur VirtualBox</li>
+      <li><i class="fa fa-circle"></i> Ouvrez firefox et suivez les instructions</li>
+      <li><i class="fa fa-circle"></i> Login: Mixit, mot de passe: mixit</li>
+    </ul>
+  </section>
+  
+
+  <script src="components/jquery/jquery.min.js"></script>
+  <script src="components/keymaster/keymaster.js"></script>
+  <script src="components/hammerjs/hammer.min.js"></script>
+  <script src="components/highlightjs/highlight.pack.js"></script>
+  <script src="js/ruban.min.js"></script>
+  <script>
+    function asciiRuban(current) {
+      var ruban = '';
+      for (var i = 0; i < 5; i++) {
+        if (i === current) {
+          ruban += '[| ' + 'RUBAN'[i] + ' |]';
+        } else {
+          ruban += '| ' + 'RUBAN'[i] + ' |';
+        }
+        ruban += '\n';
+      }
+      return ruban;
+    }
+
+    var timeoutId, i = 0;
+
+    $('#ruban').on({
+      active: function() {
+        var $pre = $(this).find('pre');
+        timeoutId = setInterval(function() {
+          var ruban = asciiRuban(i++ % 6);
+          $pre.html(ruban);
+        }, 1000);
+      },
+      inactive: function() {
+        clearInterval(timeoutId);
+      }
+    });
+
+    $('#events').on({
+      active: function() {
+        $(this).find('h1').stop().animate({marginLeft: '2em'}, 2000);
+      },
+      inactive:function() {
+        $(this).find('h1').stop().animate({marginLeft: 0});
+      }
+    });
+
+
+    var ruban = new Ruban({
+      pagination: true
+    });
+  </script>
+</body>
+</html>
