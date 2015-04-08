@@ -38,15 +38,17 @@
 
   <br/><br/>Références : 
   <ul>
-    <li><a href="http ://docs.oracle.com/Javase/7/docs/technotes/tools/">Documentation officielle Oracle sur jstat, jstack, jmap, jhat et jps</a></li>
-    <li><a href="http ://www.oracle.com/technetwork/Java/Javase/gc-tuning-6-140523.html">Documentation Oracle sur le GC</a></li>
+    <li><a href="http://docs.oracle.com/javase/7/docs/technotes/tools/share/jstat.html">Documentation officielle Oracle sur jstat</a></li>
+    <li><a href="http://docs.oracle.com/javase/7/docs/technotes/tools/share/jstack.html">Documentation officielle Oracle sur jstack</a></li>
+    <li><a href="http://docs.oracle.com/javase/7/docs/technotes/tools/share/jmap.html">Documentation officielle Oracle sur jmap</a></li>
+    <li><a href="http://www.oracle.com/technetwork/Java/Javase/gc-tuning-6-140523.html">Documentation Oracle sur le GC</a></li>
   </ul>
 
   </p>
 
 	<h2 id="install">Installation</h2>
 
-  <span class="remarque">Remarque : si vous avez déjà une version de Virtualbox 4.3.X, vous pouvez simplement importer la VM.</span>
+  <span class="remarque">Remarque : si vous avez déjà une version de Virtualbox 4.3.X, vous pouvez simplement importer la VM. (testé avec la 4.3.24)</span>
   <br/><br/>
 	 <ol>
         <li>Copier le dossier atelier de la clef USB dans un path sans espace (ex : C :/atelier ou /home/vous/atelier) </li>
@@ -81,7 +83,7 @@
     <ul>
       <li>Tester le fonctionnement du Tomcat (s'il n'est pas démarré, cf commandes utiles au projet ci-dessus.) : <pre>curl http ://127.0.0.1 :8080/api/ping<br/>Hello mix-it !</pre> </li>
       <li>Trouver le process id du Tomcat, et le noter : <pre>ps aux | grep Java</pre></li>
-      <li>Les process id Java peuvent aussi etre listés avec un outil de la JDK, lancez : <pre>jps</pre></li>
+      <li>Les process id Java peuvent aussi être listés eavec un outil de la JDK, lancez : <pre>jps</pre></li>
       <li>Faire un dump de thread : <pre>jstack <strong>[process id]</strong> > mon_fichier_jstack.txt</pre></li>
       <li>Regardez le dump, pour chaque thread vous avez une stacktrace Java de ce type :
       <pre style="max-width : 900px">
@@ -96,7 +98,7 @@
   at org.apache.Tomcat.util.threads.TaskQueue.take(TaskQueue.Java :32)
   at Java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.Java :1068)
   at Java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.Java :1130)
-  at Java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.Java :615)
+  at Java.util.concurrent.ThreadPoolExecutor$Worker.run(eThreadPoolExecutor.Java :615)
   at Java.lang.Thread.run(Thread.Java :745)</pre>
     </li>
   </ul>
@@ -195,9 +197,9 @@
     <br/>
 
     <span class="cours">Dans les outils suivants, la mémoire est considérée comme un arbre : la racine (GC ROOT) étant le premier objet Java lancé par la jvm (en faisant un raccourci : les threads du Tomcat). Chaque instance d'une classe qui crée un objet en devient son parent. Par exemple, voici un service contenant une liste de personnes :<br/>
-    <img src="img/arbre_Java.png" style="max-width :500px">
+    <img src="img/arbre_java.png" style="max-width :500px">
     <br/>
-    Si on met à null le ArrayList, on voit bien que les objets enfants (Boule, Bill, Maman et son Papa) ne sont plus rattachés à rien : ils deviennent des objets "morts" et pourront etre nettoyés par le GC.
+    Si on met à null le ArrayList, on voit bien que les objets enfants (Boule, Bill, Maman et son Papa) ne sont plus rattachés à rien : ils deviennent des objets "morts" et pourront être nettoyés par le GC.
     <br/>Par contre si on enlève l'objet Maman du ArrayList, étant donné que Maman est toujours liée à Boule : l'objet Maman reste vivant et ne peut pas &ecirc;tre nettoyé.
     </span>
     <br>

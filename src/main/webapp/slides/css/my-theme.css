@@ -1,3 +1,29 @@
 .fa {
 	font-size: 50%;
 }
+
+body, section {
+	color: #956801;
+}
+
+section {
+	background-color: #FFF6E0;
+}
+
+h1 {
+	color:#ffb100;
+}
+
+h2 {
+	color:#D7AB46;
+}
+
+li {
+	padding-bottom: 0.2em;
+}
+
+/* image de la taille diapo*/
+img.diapo {
+	padding-top: 2em;
+	max-width: 16em;
+}
