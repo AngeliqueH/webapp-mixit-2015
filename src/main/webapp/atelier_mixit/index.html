@@ -232,7 +232,8 @@
         </ul>
 
       </li>
-      <li>Filtrez avec "com.angeliquehenry" (nom du package du code de l'application)</li>
+      <li>Filtrez avec "com.angeliquehenry" dans le champ "regexpr" de la vue histogram (nom du package du code de l'application)</li>
+      <li>Triez sur Retained Heap: vous allez voir apparaitre les classent qui retiennent les objets incriminés.</li>
 
       <li>Vous pouvez aussi ouvrir memoire2.bin, puis dans la vue histogram il est possible de comparer les 2 dumps : ça permet de voir le delta entre les 2 dumps</li>
     </ul>
@@ -256,7 +257,7 @@ Server is ready.
 </pre></li>
       <li>jhat lance un serveur en local permettant de naviguer dans la pile mémoire en mode web.</li>
       <li>Dans firefox, ouvrez localhost :7000 (le port est indiqué par jhat en fin de démarrage)</li>
-      <li>Sur la page d'accueil il y a la liste des classes, puis tout en bas vous trouverez des liens vers d'autres analyses</li>
+      <li>Sur la page d'accueil il y a la liste des classes, puis <strong>tout en bas</strong> vous trouverez des liens vers d'autres analyses</li>
       <li>Cliquez par exemple sur "Show heap histogram", vous retrouverez le nombre d'objet de chaque classes dans la Heap.</li>
       <li>Détail important : jhat permet de parcourir les objets vivants et les objets morts(ne sont plus référencés) de la heap Java, contrairement a eclise mat qui n'affiche que les objets vivants.</li> 
     </ul>
@@ -268,7 +269,7 @@ Server is ready.
       <li>Ajoutez dans les variables d'environnement les options Java suivantes :
 
         <pre style="max-width : 900px">
-export JAVA_OPTS="-verbose :gc -XX :+PrintGCTimeStamps -XX :+PrintGCDetails -Xloggc :/home/mixit/Bureau/apache-tomcat-7.0.59/logs/GC_$(date '+%y%m%d_%H%M%S').log"</pre>
+export JAVA_OPTS="-verbose:gc -XX:+PrintGCTimeStamps -XX:+PrintGCDetails -Xloggc:/home/mixit/Bureau/apache-tomcat-7.0.59/logs/GC_$(date '+%y%m%d_%H%M%S').log"</pre>
 
       </li>
       <li>Dans le terminal ou vous avez fait l'export, démarrez le Tomcat :<pre>cd apache-tomcat-7.0.59/bin ; ./startup.sh</pre></li>
@@ -282,6 +283,8 @@ export JAVA_OPTS="-verbose :gc -XX :+PrintGCTimeStamps -XX :+PrintGCDetails -Xlo
       <li>302,529 : temps depuis le démarrage du Tomcat</li>
       <li>36019K->21996K(51168K) : ancienne taille de heap (new + old) -> nouvelle taille head (taille totale au moment du GC : young + old + perm)</li>
       <li>0,0059580 secs : temps mis par le GC</li>
+      <li>Lancez de nouveau la fuite mémoire:<pre>while true; do curl 127.0.0.1:8080/api/leak; sleep 1; done;</pre> </li>
+      <li>Vous devez voir passer les GC et les FGC dans le log GC du Tomcat</li>
     </ul>
 
     </div><!--div qui décale la page pour avoir le sommaire lisible -->
