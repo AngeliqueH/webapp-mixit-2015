@@ -19,7 +19,7 @@ public class InfiniteThreadController {
     String infiniteThread() {
        ThreadDeLaMort thread = new ThreadDeLaMort();
        thread.start();
-       return "OK";
+       return "\nOK\n";
     }
 
 }

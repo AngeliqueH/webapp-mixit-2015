@@ -34,7 +34,7 @@
 
   <p>Cet atelier va vous permettre de prendre en main des outils inclus dans la JDK et en mode console sur deux grandes catégories de problèmes de production : la surconsommation CPU et la surconsommation de la mémoire.
 
-  <br/><br/>Tout au long de l'atelier vous allez travailler sur un Tomcat parce que c'est un des serveurs d'application que je connais le mieux, mais les outils Java fonctionnent pour toute jvm : vous pouvez les utiliser sur un jBoss, un elasticsearch ou un Java -jar ...etc
+  <br/><br/>Tout au long de l'atelier vous allez travailler sur un Tomcat parce que c'est un des serveurs d'application que je connais le mieux, mais les outils Java fonctionnent pour toute jvm : vous pouvez les utiliser sur un jBoss, un elasticsearch ou un java -jar ...etc
 
   <br/><br/>Références : 
   <ul>
@@ -72,34 +72,34 @@
     <p>Commandes utiles au projet :</p>
     <ul>
       <li>User : mixit; mot de passe : mixit</li>
-      <li>Stopper le Tomcat : <pre>cd /home/mixit/Bureau/apache-Tomcat-7.0.59/bin ; ./shutdown.sh</pre></li>
-      <li>Démarrer le Tomcat : <pre>cd /home/mixit/Bureau/apache-Tomcat-7.0.59/bin ; ./startup.sh</pre></li>
-      <li>Logs du Tomcat : <pre>cd /home/mixit/Bureau/apache-Tomcat-7.0.59/logs</pre></li>
-      <li>Compiler le projet (normalement pas nécessaire pour l'atelier) :<pre>cd home/mixit/Bureau/webapp-mixit-2015; mvn clean install</pre></li>
+      <li>Stopper le Tomcat : <pre>cd /home/mixit/Bureau/apache-tomcat-7.0.59/bin/ ; ./shutdown.sh</pre></li>
+      <li>Démarrer le Tomcat : <pre>cd /home/mixit/Bureau/apache-tomcat-7.0.59/bin/ ; ./startup.sh</pre></li>
+      <li>Logs du Tomcat : <pre>cd /home/mixit/Bureau/apache-tomcat-7.0.59/logs/</pre></li>
+      <li>Compiler le projet (normalement pas nécessaire pour l'atelier) :<pre>cd /home/mixit/Bureau/webapp-mixit-2015; mvn clean install</pre></li>
     </ul>
 
     <h2 id="jstack">Analyse des threads Java : jstack</h2>
 
     <ul>
-      <li>Tester le fonctionnement du Tomcat (s'il n'est pas démarré, cf commandes utiles au projet ci-dessus.) : <pre>curl http ://127.0.0.1 :8080/api/ping<br/>Hello mix-it !</pre> </li>
-      <li>Trouver le process id du Tomcat, et le noter : <pre>ps aux | grep Java</pre></li>
+      <li>Tester le fonctionnement du Tomcat (s'il n'est pas démarré, cf commandes utiles au projet ci-dessus.) : <pre>curl http://127.0.0.1:8080/api/ping<br/>Hello mix-it !</pre> </li>
+      <li>Trouver le process id du Tomcat, et le noter : <pre>ps aux | grep java</pre></li>
       <li>Les process id Java peuvent aussi être listés eavec un outil de la JDK, lancez : <pre>jps</pre></li>
       <li>Faire un dump de thread : <pre>jstack <strong>[process id]</strong> > mon_fichier_jstack.txt</pre></li>
-      <li>Regardez le dump, pour chaque thread vous avez une stacktrace Java de ce type :
+      <li>Regardez le dump, pour chaque thread vous avez une stacktrace Java de ce type (le nid est l'identifiant) :
       <pre style="max-width : 900px">
 "http-apr-8002-exec-7" daemon prio=10 tid=0x00007fd7e57e8800 <strong>nid=0x3c9b</strong> waiting on condition [0x00007fd7f074c000]
-   Java.lang.Thread.State : WAITING (parking)
+   java.lang.Thread.State : WAITING (parking)
   at sun.misc.Unsafe.park(Native Method)
-  - parking to wait for  &lt;0x0000000683fa4e40&gt; (a Java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)
-  at Java.util.concurrent.locks.LockSupport.park(LockSupport.Java :186)
-  at Java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.Java :2043)
-  at Java.util.concurrent.LinkedBlockingQueue.take(LinkedBlockingQueue.Java :442)
-  at org.apache.Tomcat.util.threads.TaskQueue.take(TaskQueue.Java :104)
-  at org.apache.Tomcat.util.threads.TaskQueue.take(TaskQueue.Java :32)
-  at Java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.Java :1068)
-  at Java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.Java :1130)
-  at Java.util.concurrent.ThreadPoolExecutor$Worker.run(eThreadPoolExecutor.Java :615)
-  at Java.lang.Thread.run(Thread.Java :745)</pre>
+  - parking to wait for  &lt;0x0000000683fa4e40&gt; (a java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)
+  at java.util.concurrent.locks.LockSupport.park(LockSupport.java :186)
+  at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java :2043)
+  at java.util.concurrent.LinkedBlockingQueue.take(LinkedBlockingQueue.java :442)
+  at org.apache.tomcat.util.threads.TaskQueue.take(TaskQueue.java :104)
+  at org.apache.tomcat.util.threads.TaskQueue.take(TaskQueue.java :32)
+  at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java :1068)
+  at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java :1130)
+  at java.util.concurrent.ThreadPoolExecutor$Worker.run(eThreadPoolExecutor.java :615)
+  at java.lang.Thread.run(Thread.java :745)</pre>
     </li>
   </ul>
 
@@ -119,14 +119,16 @@
       jstack donne le même résultat qu'un kill -3 sur le process, l'avantage de jstack est que vous pouvez rediriger le résultat dans un fichier de vitre choix alors que le kill -3 écris dans la sortie standard (stdout.log pour Tomcat)</span>
       <br/>
     <ul>
-      <li>Regardez l'ensemble des thread Java via la commandes linux :<pre>ps -eLf | grep Java</pre></li>
-      <li>Regardez la consommation mémoire et CPU globale de votre Tomcat (process Java) :<pre>top</pre>
-      <li>Puis regardez la consommation mémoire et CPU des thread Java :<pre>top -H</pre></li>
+      <li>Lancer le curl toutes les secondes sur <strong>un autre terminal</strong>:<pre>watch -n 1 curl http://127.0.0.1:8080/api/ping</pre>
+      <li>Regardez l'ensemble le process Java via la commandes linux (plusieurs process java doivent apparaitre):<pre>ps -eLf | grep java</pre></li>
+      <li>Regardez la consommation mémoire et CPU globale de votre Tomcat (1 seul process java doit apparaitre) :<pre>top</pre>
+      <li>Puis regardez la consommation mémoire et CPU des thread Java (plusieurs process java doivent apparaitre):<pre>top -H</pre></li>
       <li>Vous remarquez que la consommation CPU par thread Java est très faible (&lt; 1%)</li>
       <li>L'identifiant de thread affiché sur le <span class="remarque">top -H</span> correspond au <span class="remarque">nid=</span> du dump de thread effectué avec jstack.... sauf que dans top il est en décimal alors que dans le jstack il est en héxadécimal.</li>
       <li>Nous allons maintenant faire correspondre une thread Java du <strong>jstack (nid=)</strong> avec l'identifiant trouvé dans le <strong>top -H</strong>. La petite difficulté est que les thread peuvent durer peu de temps, pour l'exercice les threads problématiques durent un temps infini mais je vous conseille de procéder de cette façon :
           <ul>
-            <li>Appeler l'url 2 ou 3 fois : <pre>curl http ://127.0.0.1 :8080/api/thread</pre></li>
+            <li>Vous pouvez stopper le watch sur le http://127.0.0.1:8080/api/ping </li>
+            <li>Appeler l'url 2 ou 3 fois : <pre>curl http://127.0.0.1:8080/api/thread</pre></li>
             <li>sur un premier terminal préparer la commande sans la lancer jstack [process id] > mon_fichier.txt</li>
             <li>sur un second terminal, faire le top -H</li>
             <li>Lancer la commande jstack et de suite après faire CTRL+C sur le top -H : vous aurez une photo du top au moment du jstack et pourrez ensuite travailler calmement.</li>
@@ -145,8 +147,8 @@
     <h2 id="jstat">La mémoire Java : tendance générale avec jstat</h2>
 
     <ul>
-      <li>Tester le fonctionnement du Tomcat : <pre>curl 127.0.0.1 :8080/api/ping</pre></li>
-      <li>Trouver le process id du Tomcat : <pre>ps aux | grep Java</pre></li>
+      <li>Tester le fonctionnement du Tomcat : <pre>curl 127.0.0.1:8080/api/ping</pre></li>
+      <li>Trouver le process id du Tomcat : <pre>ps aux | grep java</pre></li>
       <li>Lancer un jstat :<pre>jstat -gc -h10 [process id] 2000</pre></li>
       <ul>
         <li>-h10 : permet de répeter les entêtes toutes les 10 lignes</li>
@@ -204,19 +206,19 @@
     </span>
     <br>
     <ul>
-      <li>Lancez dans un terminal une boule infinie de curl : <pre>while true; do curl 127.0.0.1 :8080/api/leak; sleep 1; done;</pre></li>
+      <li>Lancez dans un terminal une boule infinie de curl : <pre>while true; do curl 127.0.0.1:8080/api/leak; sleep 1; done;</pre></li>
       <li>observez l'évolution de la mémoire avec jstat -gc : vous voyez beaucoup de GC passer, et le temps cumulé des GC augmente rapidement et le OU augmente strictement, malgrès les passages de GC ou full GC.</li>
       <li>Nous allons maintenant regarder rapidement le contenu de la mémoire</li>
-      <li>Lancez <pre>jmap -histo :live [process id]</pre></li>
+      <li>Lancez <pre>jmap -histo:live [process id]</pre></li>
       <li>Vous obtenez la liste des objets vivants dans la heap, avec le nombre d'instances de chaques objets ainsi que la taille en bytes.</li>
     </ul>
 
     <ul>
       <li>Nous allons maintenant analyser en détail le contenu de la mémoire.</li>
-      <li>Lancez dans le dossier de votre choix <pre>jmap -dump :format=b,file=memoire1.bin [PID]</pre></li>
-      <li>Attendez quelques minutes et relancez avec un nom de fichier different :<pre>jmap -dump :format=b,file=memoire2.bin [PID]</pre></li>
+      <li>Lancez dans le dossier de votre choix <pre>jmap -dump:format=b,file=memoire1.bin [PID]</pre></li>
+      <li>Attendez quelques minutes et relancez avec un nom de fichier different :<pre>jmap -dump:format=b,file=memoire2.bin [PID]</pre></li>
       <li>Vous allez pouvoir maintenant enfiler des bottes et mettre un casque pour faire de la spéléo dans la heap Java :)</li>
-      <li>Lancez eclipse MAT (Memory Analyser Tool) et ouvrez le memoire1.bin</li>
+      <li>Lancez eclipse MAT (Memory Analyser Tool) fourni dans /Bureau/eclipse mat/MemoryAnalyzer et ouvrez le memoire1.bin</li>
     </ul>
     <span class="cours">A partir de là je n'ai pas de recette magique, il faut se balader un peu partout pour arriver à déduire l'origine du problème. Dans le cadre de l'atelier la fuite mémoire est très facile à trouver, mais dans la réalité il faut pas mal chercher avant de comprendre ce qu'il se passe. Voici quand même quelques indications.</span>
     
@@ -230,6 +232,7 @@
         </ul>
 
       </li>
+      <li>Filtrez avec "com.angeliquehenry" (nom du package du code de l'application)</li>
 
       <li>Vous pouvez aussi ouvrir memoire2.bin, puis dans la vue histogram il est possible de comparer les 2 dumps : ça permet de voir le delta entre les 2 dumps</li>
     </ul>
@@ -261,16 +264,16 @@ Server is ready.
     <h2 id="Tomcat">Des options de jvm utiles</h2>
 
     <ul>
-      <li>Stoppez le Tomcat :<pre>cd apache-Tomcat-7.0.59/bin ; ./shutdown.sh</pre></li>
+      <li>Stoppez le Tomcat :<pre>cd apache-tomcat-7.0.59/bin ; ./shutdown.sh</pre></li>
       <li>Ajoutez dans les variables d'environnement les options Java suivantes :
 
         <pre style="max-width : 900px">
-export Java_OPTS="-verbose :gc -XX :+PrintGCTimeStamps -XX :+PrintGCDetails -Xloggc :/home/mixit/Bureau/apache-Tomcat-7.0.59/logs/GC_$(date '+%y%m%d_%H%M%S').log"</pre>
+export JAVA_OPTS="-verbose :gc -XX :+PrintGCTimeStamps -XX :+PrintGCDetails -Xloggc :/home/mixit/Bureau/apache-tomcat-7.0.59/logs/GC_$(date '+%y%m%d_%H%M%S').log"</pre>
 
       </li>
-      <li>Dans le terminal ou vous avez fait l'export, démarrez le Tomcat :<pre>cd apache-Tomcat-7.0.59/bin ; ./startup.sh</pre></li>
-      <li>Vérifiez la prise en compte des options :<pre>ps -aux | grep Java</pre></li>
-      <li>Allez dans les logs :<pre>/home/mixit/Bureau/apache-Tomcat-7.0.59/logs</pre></li>
+      <li>Dans le terminal ou vous avez fait l'export, démarrez le Tomcat :<pre>cd apache-tomcat-7.0.59/bin ; ./startup.sh</pre></li>
+      <li>Vérifiez la prise en compte des options :<pre>ps -aux | grep java</pre></li>
+      <li>Allez dans les logs :<pre>/home/mixit/Bureau/apache-tomcat-7.0.59/logs</pre></li>
       <li>Un fichier GC_XXX a été créé, ouvrez le, il contient des lignes :
 <pre style="max-width : 900px">
 302,529 : [GC302,529 : [DefNew : 14760K->738K(15936K), 0,0008210 secs] 36019K->21996K(51168K), 0,0059580 secs]

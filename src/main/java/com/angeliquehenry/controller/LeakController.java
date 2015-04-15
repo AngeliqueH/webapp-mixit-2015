@@ -29,7 +29,7 @@ public class LeakController {
        
        cache.put(System.currentTimeMillis(),new MixitObject(bigString));
        
-       return "OK";
+       return "\nOK\n";
     }
 
 }

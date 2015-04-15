@@ -10,7 +10,7 @@ public class HelloController {
     @RequestMapping("/api")
     @ResponseBody
     String home() {
-        return "Hello World!";
+        return "\nHello World!";
     }
 
     //public static void main(String[] args) throws Exception {
